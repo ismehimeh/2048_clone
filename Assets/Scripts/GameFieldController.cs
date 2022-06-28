@@ -8,7 +8,7 @@ public class GameFieldController : MonoBehaviour
     public GameObject gameField;
     public GameObject cellsContainer;
     public GameObject cellPrefab;
-    public float gap = 0.5f;
+    public float gap = 0.15f;
 
 
     // Start is called before the first frame update
