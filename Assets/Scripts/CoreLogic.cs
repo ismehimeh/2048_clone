@@ -151,4 +151,31 @@ public class CoreLogic : MonoBehaviour
         }
         return true;
     }
+
+    public (int, int) getPositionForNewCell(List<List<CellData>> field)
+    {
+        List<(int, int)> emptyCells = new();
+        for (int i = 0; i < field.Count; i++)
+        {
+            for (int j = 0; j < field[i].Count; j++)
+            {
+                if (field[i][j].value == 0) emptyCells.Add((i, j));
+            }
+        }
+        int randomIndex = UnityEngine.Random.Range(0, emptyCells.Count - 1);
+
+        return emptyCells[randomIndex];
+    }
+
+    public int getNewCellValue()
+    {
+        int randomNumber = UnityEngine.Random.Range(1, 10);
+        if (randomNumber == 1)
+        {
+            return 4;
+        } else
+        {
+            return 2;
+        }
+    }
 }
