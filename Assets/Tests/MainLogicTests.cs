@@ -270,4 +270,79 @@ public class MainLogicTests
 
         Assert.AreEqual(expected, result);
     }
+
+    [Test]
+    public void MoveInpossibleToMoveFieldToLeft()
+    {
+        CoreLogic sut = new CoreLogic();
+
+        List<List<CoreLogic.CellData>> field = convert(new List<List<int>> {
+        new List<int> { 2, 4, 2, 4 },
+        new List<int> { 4, 2, 4, 2 },
+        new List<int> { 2, 4, 2, 4 },
+        new List<int> { 4, 2, 4, 2 }
+        });
+
+        List<List<CoreLogic.CellData>> expected = convert(new List<List<int>> {
+        new List<int> { 2, 4, 2, 4 },
+        new List<int> { 4, 2, 4, 2 },
+        new List<int> { 2, 4, 2, 4 },
+        new List<int> { 4, 2, 4, 2 }
+        });
+
+        List<List<CoreLogic.CellData>> result = sut.makeMove(field, CoreLogic.Direction.Left);
+
+        Assert.AreEqual(expected, result);
+    }
+
+    [Test]
+    public void NotPossibleToMakeAMove()
+    {
+        CoreLogic sut = new CoreLogic();
+
+        List<List<CoreLogic.CellData>> field = convert(new List<List<int>> {
+        new List<int> { 2, 4, 2, 4 },
+        new List<int> { 4, 2, 4, 2 },
+        new List<int> { 2, 4, 2, 4 },
+        new List<int> { 4, 2, 4, 2 }
+        });
+
+        bool result = sut.isPossibleToMove(field);
+
+        Assert.AreEqual(false, result);
+    }
+
+    [Test]
+    public void IsPossibleToMakeAMove1()
+    {
+        CoreLogic sut = new CoreLogic();
+
+        List<List<CoreLogic.CellData>> field = convert(new List<List<int>> {
+        new List<int> { 2, 4, 2, 4 },
+        new List<int> { 4, 2, 4, 2 },
+        new List<int> { 2, 4, 4, 4 },
+        new List<int> { 4, 2, 4, 2 }
+        });
+
+        bool result = sut.isPossibleToMove(field);
+
+        Assert.AreEqual(true, result);
+    }
+
+    [Test]
+    public void IsPossibleToMakeAMove2()
+    {
+        CoreLogic sut = new CoreLogic();
+
+        List<List<CoreLogic.CellData>> field = convert(new List<List<int>> {
+        new List<int> { 0, 0, 0, 0 },
+        new List<int> { 0, 0, 0, 0 },
+        new List<int> { 0, 0, 4, 0 },
+        new List<int> { 0, 0, 0, 0 }
+        });
+
+        bool result = sut.isPossibleToMove(field);
+
+        Assert.AreEqual(true, result);
+    }
 }

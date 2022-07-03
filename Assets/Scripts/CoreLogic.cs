@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Linq;
 
 public class CoreLogic : MonoBehaviour
 {
@@ -127,5 +128,27 @@ public class CoreLogic : MonoBehaviour
             }
             return result;
         }
+    }
+
+    public bool isPossibleToMove(List<List<CellData>> field)
+    {
+        List<List<CellData>> fieldCopy = new List<List<CellData>>(field);
+        foreach (Direction d in Enum.GetValues(typeof(Direction)))
+        {
+            List<List<CellData>> movedField = makeMove(fieldCopy, d);
+            if (!ListsEqual(fieldCopy, movedField))
+                return true;
+        }
+        return false;
+    }
+
+    public bool ListsEqual(List<List<CellData>> lhs, List<List<CellData>> rhs)
+    {
+        if (lhs.Count != rhs.Count) return false;
+        for( int i = 0; i < lhs.Count; i++)
+        {
+            if (!lhs[i].SequenceEqual(rhs[i])) return false;
+        }
+        return true;
     }
 }
