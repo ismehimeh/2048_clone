@@ -8,15 +8,19 @@ public class CoreLogic : ScriptableObject
 {
     public enum Direction { Left, Right, Up, Down };
 
-    public struct CellData: IEquatable<CellData>
+    public class CellData: IEquatable<CellData>
     {
         public int value;
+        public bool isCollapsedFromOthers;
         public bool isNew;
+        public (int, int)? previousIndex;
 
-        public CellData(int value, bool isNew)
+        public CellData(int value, bool isCollapsedFromOthers)
         {
             this.value = value;
-            this.isNew = isNew;
+            this.isCollapsedFromOthers = isCollapsedFromOthers;
+            isNew = false;
+            previousIndex = null;
         }
 
         public bool Equals(CellData other)
@@ -35,13 +39,15 @@ public class CoreLogic : ScriptableObject
                 continue;
             for (int g = i; g > 0; g--)
             {
-                bool canMoveToCell =    !fieldCopy[g - 1].isNew && (
+                bool canMoveToCell =    !fieldCopy[g - 1].isCollapsedFromOthers && (
                                         fieldCopy[g - 1].value == 0 ||
                                         fieldCopy[g - 1].value == fieldCopy[g].value);
                 if (canMoveToCell)
                 {
-                    bool isNewCell = fieldCopy[g - 1].value != 0;
-                    CellData newCell = new CellData(fieldCopy[g].value + fieldCopy[g - 1].value, isNewCell);
+                    bool isCollapsedFromOthers = fieldCopy[g - 1].value != 0;
+                    CellData newCell = new CellData(fieldCopy[g].value + fieldCopy[g - 1].value, isCollapsedFromOthers);
+                    newCell.previousIndex = fieldCopy[g].previousIndex;
+
                     fieldCopy[g - 1] = newCell;
                     fieldCopy[g] = new CellData(0, false);
                 }
@@ -52,12 +58,41 @@ public class CoreLogic : ScriptableObject
         return fieldCopy;
     }
 
+    // переношу эти методы сюда
+    private void markCellsCurrentPositions(List<List<CellData>> field)
+    {
+        for (int i = 0; i < field.Count; i++)
+        {
+            for (int j = 0; j < field[i].Count; j++)
+            {
+                if (field[i][j].value != 0) field[i][j].previousIndex = (i, j);
+            }
+        }
+    }
+
+    private void
+        clearFieldFromMarks(List<List<CellData>> field)
+    {
+        for (int i = 0; i < field.Count; i++)
+        {
+            for (int j = 0; j < field[i].Count; j++)
+            {
+                field[i][j] = new CoreLogic.CellData(field[i][j].value, false)
+                {
+                    previousIndex = null
+                };
+            }
+        }
+    }
+
     // there is one major movement: from to the left
     // another moves are made by rotating or reversing a list
     public List<List<CellData>> makeMove(List<List<CellData>> field, Direction direction)
     {
         List<List<CellData>> fieldCopy = new List<List<CellData>>(field);
-        switch(direction)
+        clearFieldFromMarks(fieldCopy);
+        markCellsCurrentPositions(fieldCopy);
+        switch (direction)
         {
             case Direction.Left:
                 for(int j = 0; j < fieldCopy.Count; j++)

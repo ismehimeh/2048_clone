@@ -26,6 +26,8 @@ public class CellController : MonoBehaviour
     private Color textColor_2_4 = new Color32(117, 110, 102, 255);
     private Color textColor_biggerThan_2_4 = new Color32(248, 246, 242, 255);
 
+    private float animationLength = 0.1f;
+
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -41,6 +43,38 @@ public class CellController : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void playPopUpAnimation()
+    {
+        GetComponent<Animation>().Play("PopUp");
+    }
+
+    public void
+        playAnimationOfMove(Vector3 from, Vector3 to)
+    {
+        //GetComponent<Animation>().RemoveClip("Move");
+        var clip = new AnimationClip();
+        clip.legacy = true;
+
+        Keyframe[] xTransformFrames;
+        xTransformFrames = new Keyframe[2];
+        xTransformFrames[0] = new Keyframe(0, from.x);
+        xTransformFrames[1] = new Keyframe(animationLength, to.x);
+
+        Keyframe[] yTransformFrames;
+        yTransformFrames = new Keyframe[2];
+        yTransformFrames[0] = new Keyframe(0, from.y);
+        yTransformFrames[1] = new Keyframe(animationLength, to.y);
+
+        var xCurve = new AnimationCurve(xTransformFrames);
+        var yCurve = new AnimationCurve(yTransformFrames);
+
+        clip.SetCurve("", typeof(Transform), "m_LocalPosition.x", xCurve);
+        clip.SetCurve("", typeof(Transform), "m_LocalPosition.y", yCurve);
+
+        GetComponent<Animation>().AddClip(clip, "Move");
+        GetComponent<Animation>().Play("Move");
     }
 
     public void SetValue(int value)

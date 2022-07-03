@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3724730171701514862}
   - component: {fileID: 3724730171701514863}
   - component: {fileID: 2943451620633685761}
+  - component: {fileID: 1250788721}
   m_Layer: 0
   m_Name: GameFieldCell
   m_TagString: Untagged
@@ -99,6 +100,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   label: {fileID: 4682231126198994148}
+--- !u!111 &1250788721
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3724730171701514857}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Animation: {fileID: 0}
+  m_Animations:
+  - {fileID: 7400000, guid: 21530d51b28f646828fa7b6118ca5f20, type: 2}
+  m_WrapMode: 0
+  m_PlayAutomatically: 1
+  m_AnimatePhysics: 0
+  m_CullingType: 0
 --- !u!1 &4682231126198994170
 GameObject:
   m_ObjectHideFlags: 0
