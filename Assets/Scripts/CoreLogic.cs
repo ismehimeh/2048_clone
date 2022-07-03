@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 using System.Linq;
 
-public class CoreLogic : MonoBehaviour
+public class CoreLogic : ScriptableObject
 {
     public enum Direction { Left, Right, Up, Down };
 
@@ -152,7 +152,7 @@ public class CoreLogic : MonoBehaviour
         return true;
     }
 
-    public (int, int) getPositionForNewCell(List<List<CellData>> field)
+    public (int, int)? getPositionForNewCell(List<List<CellData>> field)
     {
         List<(int, int)> emptyCells = new();
         for (int i = 0; i < field.Count; i++)
@@ -177,5 +177,54 @@ public class CoreLogic : MonoBehaviour
         {
             return 2;
         }
+    }
+
+    public List<List<CellData>> getStartField()
+    {
+        List<List<CoreLogic.CellData>> field = convert(new List<List<int>> {
+        new List<int> { 0, 0, 0, 0 },
+        new List<int> { 0, 0, 0, 0 },
+        new List<int> { 0, 0, 0, 0 },
+        new List<int> { 0, 0, 0, 0 }
+        });
+
+        (int, int)? firstCellIndex = getPositionForNewCell(field);
+        if (!firstCellIndex.HasValue) return field;
+        int firstCellValue = getNewCellValue();
+        field[firstCellIndex.GetValueOrDefault().Item1][firstCellIndex.GetValueOrDefault().Item2] = new CellData(firstCellValue, false);
+
+        (int, int)? secondtCellIndex = getPositionForNewCell(field);
+        if (!secondtCellIndex.HasValue) return field;
+        int secondCellValue = getNewCellValue();
+        field[secondtCellIndex.GetValueOrDefault().Item1][secondtCellIndex.GetValueOrDefault().Item2] = new CellData(secondCellValue, false);
+
+        return field;
+    }
+
+    private List<List<CoreLogic.CellData>> convert(List<List<int>> field)
+    {
+        List<List<CoreLogic.CellData>> result = new();
+
+        for (int i = 0; i < field.Count; i++)
+        {
+            List<CoreLogic.CellData> row = new();
+            for (int j = 0; j < field[i].Count; j++)
+            {
+                row.Add(new CoreLogic.CellData(field[i][j], false));
+            }
+            result.Add(row);
+        }
+        return result;
+    }
+
+    private List<CoreLogic.CellData> convert(List<int> field)
+    {
+        List<CoreLogic.CellData> result = new();
+
+        for (int i = 0; i < field.Count; i++)
+        {
+            result.Add(new CoreLogic.CellData(field[i], false));
+        }
+        return result;
     }
 }
