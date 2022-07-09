@@ -39,7 +39,7 @@ public class GameFieldController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        List<List<CoreLogic.CellData>> fieldBeforeMove = Copy(field);
+        List<List<CoreLogic.CellData>> fieldBeforeMove = new List<List<CoreLogic.CellData>>(field);
 
         if (!CatchMove()) return;
 
@@ -59,31 +59,29 @@ public class GameFieldController : MonoBehaviour
         }
     }
 
-    
-
     private bool CatchMove()
     {
         bool isMoveBeenMade = false;
 
-        if (Input.GetKeyDown("left"))
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             field = logic.makeMove(field, CoreLogic.Direction.Left);
             isMoveBeenMade = true;
         }
 
-        if (Input.GetKeyDown("up"))
+        if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             field = logic.makeMove(field, CoreLogic.Direction.Up);
             isMoveBeenMade = true;
         }
 
-        if (Input.GetKeyDown("right"))
+        if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             field = logic.makeMove(field, CoreLogic.Direction.Right);
             isMoveBeenMade = true;
         }
 
-        if (Input.GetKeyDown("down"))
+        if (Input.GetKeyDown(KeyCode.DownArrow))
         {
             field = logic.makeMove(field, CoreLogic.Direction.Down);
             isMoveBeenMade = true;
@@ -107,16 +105,6 @@ public class GameFieldController : MonoBehaviour
             isNew = true
         };
         field[newCellPosition.GetValueOrDefault().Item1][newCellPosition.GetValueOrDefault().Item2] = newCell;
-    }
-
-    private List<List<CoreLogic.CellData>> Copy(List<List<CoreLogic.CellData>> field)
-    {
-        List<List<CoreLogic.CellData>> copy = new();
-        for (int i = 0; i < field.Count; i++)
-        {
-            copy.Add(field[i]);
-        }
-        return copy;
     }
 
     private void BuuildFieldBackground()
@@ -193,15 +181,5 @@ public class GameFieldController : MonoBehaviour
             var newPosition = PositionForCellReversed(i, j, field);
             cell.GetComponent<CellController>().playAnimationOfMove(previousPosition, newPosition);
         }
-    }
-
-    private List<List<CoreLogic.CellData>> ReverseField(List<List<CoreLogic.CellData>> field)
-    {
-        List<List<CoreLogic.CellData>> reversedField = new();
-        for (int i = field.Count - 1; i >= 0; i--)
-        {
-            reversedField.Add(field[i]);
-        }
-        return reversedField;
     }
 }
