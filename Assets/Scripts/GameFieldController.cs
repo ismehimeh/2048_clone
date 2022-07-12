@@ -23,6 +23,11 @@ public class GameFieldController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
+        var cameraHeight = Camera.main.orthographicSize * 2;
+        float cameraWidth = cameraHeight * Screen.width / Screen.height;
+        gameField.transform.localScale = Vector3.one * cameraWidth * 0.9f;
+
         gameFieldWidth = gameField.GetComponent<SpriteRenderer>().bounds.size.x;
         gameFieldHeight = gameField.GetComponent<SpriteRenderer>().bounds.size.y;
 
@@ -120,19 +125,19 @@ public class GameFieldController : MonoBehaviour
                 cell.transform.localPosition = PositionForCell(i, j);
             }
         }
+        cellsContainer.transform.localPosition = gameField.transform.localPosition - new Vector3(gameFieldWidth / 2, gameFieldHeight / 2, 0);
     }
 
     private Vector3 PositionForCell(int i, int j)
     {
         return new Vector3(gap * (j + 1) + cellWidth * j, gap * (i + 1) + cellHeight * i) +
-                    new Vector3(cellWidth / 2, cellHeight / 2);
+               new Vector3(cellWidth / 2, cellHeight / 2);
     }
 
     private Vector3 PositionForCellReversed(int i, int j, List<List<CoreLogic.CellData>> field)
     {
         var iReversed = field.Count - 1 - i;
-        return new Vector3(gap * (j + 1) + cellWidth * j, gap * (iReversed + 1) + cellHeight * iReversed) +
-                    new Vector3(cellWidth / 2, cellHeight / 2);
+        return PositionForCell(iReversed, j);
     }
 
     private void RenderField()
