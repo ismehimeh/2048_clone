@@ -20,7 +20,44 @@ public class GameFieldController : MonoBehaviour
     float cellWidth;
     float cellHeight;
 
-    // Start is called before the first frame update
+
+    [SerializeField]
+    private GameObject managers;
+    private SwipeDetection swipeDetection;
+
+    private void Awake()
+    {
+        swipeDetection = managers.GetComponent<SwipeDetection>();
+    }
+
+    private void OnEnable()
+    {
+        swipeDetection.OnSwipe += OnSwipe;
+    }
+
+    private void OnDisable()
+    {
+        swipeDetection.OnSwipe -= OnSwipe;
+    }
+
+    private void OnSwipe(SwipeDetection.Direction direction)
+    {
+        switch (direction) {
+            case SwipeDetection.Direction.Up:
+                MakeMove(CoreLogic.Direction.Up);
+                break;
+            case SwipeDetection.Direction.Right:
+                MakeMove(CoreLogic.Direction.Right);
+                break;
+            case SwipeDetection.Direction.Down:
+                MakeMove(CoreLogic.Direction.Down);
+                break;
+            case SwipeDetection.Direction.Left:
+                MakeMove(CoreLogic.Direction.Left);
+                break;
+        }
+    }
+
     void Start()
     {
 
@@ -41,13 +78,10 @@ public class GameFieldController : MonoBehaviour
         RenderField();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void MakeMove(CoreLogic.Direction direction)
     {
         List<List<CoreLogic.CellData>> fieldBeforeMove = new List<List<CoreLogic.CellData>>(field);
-
-        if (!CatchMove()) return;
-
+        field = logic.makeMove(field, direction);
         if (logic.ListsEqual(field, fieldBeforeMove))
         {
             // if out move didn't change something, then not generate new element
@@ -62,37 +96,6 @@ public class GameFieldController : MonoBehaviour
             Debug.Log("You loose!");
             return;
         }
-    }
-
-    private bool CatchMove()
-    {
-        bool isMoveBeenMade = false;
-
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            field = logic.makeMove(field, CoreLogic.Direction.Left);
-            isMoveBeenMade = true;
-        }
-
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            field = logic.makeMove(field, CoreLogic.Direction.Up);
-            isMoveBeenMade = true;
-        }
-
-        if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            field = logic.makeMove(field, CoreLogic.Direction.Right);
-            isMoveBeenMade = true;
-        }
-
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            field = logic.makeMove(field, CoreLogic.Direction.Down);
-            isMoveBeenMade = true;
-        }
-
-        return isMoveBeenMade;
     }
 
     private void AddNewCell()
