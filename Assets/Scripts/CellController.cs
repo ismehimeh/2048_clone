@@ -26,7 +26,8 @@ public class CellController : MonoBehaviour
     private Color textColor_2_4 = new Color32(117, 110, 102, 255);
     private Color textColor_biggerThan_2_4 = new Color32(248, 246, 242, 255);
 
-    private float animationLength = 0.1f;
+    private float moveAnimationDuration = 0.1f;
+    private float popUpAnimationDuration = 0.1f;
 
     private void Awake()
     {
@@ -45,27 +46,46 @@ public class CellController : MonoBehaviour
         
     }
 
-    public void playPopUpAnimation()
+    public void playPopUpAnimation(Vector3 targetScale)
     {
+        var clip = new AnimationClip();
+        clip.legacy = true;
+
+        Keyframe[] xTransformFrames;
+        xTransformFrames = new Keyframe[2];
+        xTransformFrames[0] = new Keyframe(0, 0);
+        xTransformFrames[1] = new Keyframe(popUpAnimationDuration, targetScale.x);
+
+        Keyframe[] yTransformFrames;
+        yTransformFrames = new Keyframe[2];
+        yTransformFrames[0] = new Keyframe(0, 0);
+        yTransformFrames[1] = new Keyframe(popUpAnimationDuration, targetScale.y);
+
+        var xCurve = new AnimationCurve(xTransformFrames);
+        var yCurve = new AnimationCurve(yTransformFrames);
+
+        clip.SetCurve("", typeof(Transform), "m_LocalScale.x", xCurve);
+        clip.SetCurve("", typeof(Transform), "m_LocalScale.y", yCurve);
+
+        GetComponent<Animation>().AddClip(clip, "PopUp");
         GetComponent<Animation>().Play("PopUp");
     }
 
     public void
         playAnimationOfMove(Vector3 from, Vector3 to)
     {
-        //GetComponent<Animation>().RemoveClip("Move");
         var clip = new AnimationClip();
         clip.legacy = true;
 
         Keyframe[] xTransformFrames;
         xTransformFrames = new Keyframe[2];
         xTransformFrames[0] = new Keyframe(0, from.x);
-        xTransformFrames[1] = new Keyframe(animationLength, to.x);
+        xTransformFrames[1] = new Keyframe(moveAnimationDuration, to.x);
 
         Keyframe[] yTransformFrames;
         yTransformFrames = new Keyframe[2];
         yTransformFrames[0] = new Keyframe(0, from.y);
-        yTransformFrames[1] = new Keyframe(animationLength, to.y);
+        yTransformFrames[1] = new Keyframe(moveAnimationDuration, to.y);
 
         var xCurve = new AnimationCurve(xTransformFrames);
         var yCurve = new AnimationCurve(yTransformFrames);

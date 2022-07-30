@@ -173,7 +173,7 @@ public class GameFieldController : MonoBehaviour
 
                 if (field[i][j].isNew)
                 {
-                    cell.GetComponent<CellController>().playPopUpAnimation();
+                    cell.GetComponent<CellController>().playPopUpAnimation(cell.transform.localScale);
                 }
 
                 PerformMovementAnimation(cell, field[i][j], i, j, field);
