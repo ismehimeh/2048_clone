@@ -95,8 +95,6 @@ public class MainLogicTests
         Assert.AreEqual(expected, result);
     }
 
-    
-
     [Test]
     public void SimpleMoveOf0002()
     {
@@ -344,5 +342,73 @@ public class MainLogicTests
         bool result = sut.isPossibleToMove(field);
 
         Assert.AreEqual(true, result);
+    }
+
+    [Test]
+    public void IsScore4CalculatesCorrect()
+    {
+        CoreLogic sut = new CoreLogic();
+
+        List<List<CoreLogic.CellData>> field = convert(new List<List<int>> {
+        new List<int> { 0, 0, 0, 0 },
+        new List<int> { 0, 0, 0, 0 },
+        new List<int> { 0, 0, 2, 0 },
+        new List<int> { 0, 0, 2, 0 }
+        });
+
+        List<List<CoreLogic.CellData>> resultField = sut.makeMove(field, CoreLogic.Direction.Down);
+        var result = sut.GetScore(resultField);
+        Assert.AreEqual(4, result);
+    }
+
+    [Test]
+    public void IsScore8CalculatesCorrect()
+    {
+        CoreLogic sut = new CoreLogic();
+
+        List<List<CoreLogic.CellData>> field = convert(new List<List<int>> {
+        new List<int> { 0, 0, 0, 0 },
+        new List<int> { 0, 0, 0, 0 },
+        new List<int> { 0, 0, 4, 0 },
+        new List<int> { 0, 0, 4, 0 }
+        });
+
+        List<List<CoreLogic.CellData>> resultField = sut.makeMove(field, CoreLogic.Direction.Down);
+        var result = sut.GetScore(resultField);
+        Assert.AreEqual(8, result);
+    }
+
+    [Test]
+    public void IsScore1048CalculatesCorrect()
+    {
+        CoreLogic sut = new CoreLogic();
+
+        List<List<CoreLogic.CellData>> field = convert(new List<List<int>> {
+        new List<int> { 0, 0, 0, 0 },
+        new List<int> { 0, 0, 0, 0 },
+        new List<int> { 8, 512, 4, 0 },
+        new List<int> { 8, 512, 4, 0 }
+        });
+
+        List<List<CoreLogic.CellData>> resultField = sut.makeMove(field, CoreLogic.Direction.Down);
+        var result = sut.GetScore(resultField);
+        Assert.AreEqual(1048, result);
+    }
+
+    [Test]
+    public void IsScore0CalculatesCorrect()
+    {
+        CoreLogic sut = new CoreLogic();
+
+        List<List<CoreLogic.CellData>> field = convert(new List<List<int>> {
+        new List<int> { 0, 0, 0, 0 },
+        new List<int> { 0, 0, 0, 0 },
+        new List<int> { 8, 0, 0, 0 },
+        new List<int> { 0, 0, 4, 0 }
+        });
+
+        List<List<CoreLogic.CellData>> resultField = sut.makeMove(field, CoreLogic.Direction.Down);
+        var result = sut.GetScore(resultField);
+        Assert.AreEqual(0, result);
     }
 }

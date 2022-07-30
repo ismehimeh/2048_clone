@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class GameFieldController : MonoBehaviour
 {
@@ -24,6 +25,11 @@ public class GameFieldController : MonoBehaviour
     [SerializeField]
     private GameObject managers;
     private SwipeDetection swipeDetection;
+
+    private int score = 0;
+
+    [SerializeField]
+    private TMP_Text scoreLabel;
 
     private void Awake()
     {
@@ -60,7 +66,7 @@ public class GameFieldController : MonoBehaviour
 
     void Start()
     {
-
+        scoreLabel.text = score.ToString();
         var cameraHeight = Camera.main.orthographicSize * 2;
         float cameraWidth = cameraHeight * Screen.width / Screen.height;
         gameField.transform.localScale = Vector3.one * cameraWidth * 0.9f;
@@ -90,6 +96,8 @@ public class GameFieldController : MonoBehaviour
 
         AddNewCell();
         RenderField();
+        score += logic.GetScore(field);
+        scoreLabel.text = score.ToString();
 
         if (!logic.isPossibleToMove(field))
         {

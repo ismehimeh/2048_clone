@@ -1640,6 +1640,7 @@ MonoBehaviour:
   cellPrefab: {fileID: 3724730171701514857, guid: 321ef504620ca486183a635596f5aaf6, type: 3}
   gap: 0.2
   managers: {fileID: 760592702}
+  scoreLabel: {fileID: 1270445336}
 --- !u!4 &1284137492
 Transform:
   m_ObjectHideFlags: 0
