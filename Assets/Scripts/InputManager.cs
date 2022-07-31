@@ -31,11 +31,13 @@ public class InputManager : Singleton<InputManager>
 
     private void Start()
     {
-        touchControls.Touch.PrimaryContact.started += ctx => StartTouchPrimary(ctx);
+        
+        touchControls.Touch.PrimaryContact.started += ctx => StartTouchPrimary();
     }
 
-    private void StartTouchPrimary(InputAction.CallbackContext context)
+    private void StartTouchPrimary()
     {
+        CheckMainCamera();
         if (OnStartTouch != null) OnStartTouch(Utils.ScreenToWorld(mainCamera,
                                                                     touchControls.Touch.PrimaryPosition.ReadValue<Vector2>()));
 
@@ -43,6 +45,15 @@ public class InputManager : Singleton<InputManager>
 
     public Vector2 PrimaryPosition()
     {
+        CheckMainCamera();
         return Utils.ScreenToWorld(mainCamera, touchControls.Touch.PrimaryPosition.ReadValue<Vector2>());
+    }
+
+    // for some reason mainCamera is equall null when you load first scene again after loosing
+    // idk why, maybe bcause of DefaultExecutionOrder or Singleton
+    private void CheckMainCamera()
+    {
+        if (mainCamera == null)
+            mainCamera = Camera.main;
     }
 }

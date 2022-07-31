@@ -1,7 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GameFieldController : MonoBehaviour
 {
@@ -26,7 +27,7 @@ public class GameFieldController : MonoBehaviour
     private GameObject managers;
     private SwipeDetection swipeDetection;
 
-    private int score = 0;
+    public int score = 0;
 
     [SerializeField]
     private TMP_Text scoreLabel;
@@ -101,8 +102,7 @@ public class GameFieldController : MonoBehaviour
 
         if (!logic.isPossibleToMove(field))
         {
-            Debug.Log("You loose!");
-            return;
+            OnLoose();
         }
     }
 
@@ -111,7 +111,7 @@ public class GameFieldController : MonoBehaviour
         (int, int)? newCellPosition = logic.getPositionForNewCell(field);
         if (!newCellPosition.HasValue)
         {
-            Debug.Log("You loose!");
+            OnLoose();
             return;
         }
 
@@ -121,6 +121,20 @@ public class GameFieldController : MonoBehaviour
             isNew = true
         };
         field[newCellPosition.GetValueOrDefault().Item1][newCellPosition.GetValueOrDefault().Item2] = newCell;
+    }
+
+    private void OnLoose()
+    {
+        PlayerPrefs.SetInt("score", score);
+        swipeDetection.OnSwipe -= OnSwipe;
+        StartCoroutine(LoadGameOverSceneWithDelay());
+        return;
+    }
+
+    private IEnumerator LoadGameOverSceneWithDelay()
+    {
+        yield return new WaitForSeconds(1);
+        SceneManager.LoadSceneAsync("GameOverScene");
     }
 
     private void BuuildFieldBackground()

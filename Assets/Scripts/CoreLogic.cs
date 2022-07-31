@@ -236,6 +236,18 @@ public class CoreLogic : ScriptableObject
         return field;
     }
 
+    public List<List<CellData>> getAlmostEndField()
+    {
+        List<List<CoreLogic.CellData>> field = convert(new List<List<int>> {
+        new List<int> { 2, 4, 8, 16 },
+        new List<int> { 32, 64, 128, 512 },
+        new List<int> { 512, 128, 64, 512 },
+        new List<int> { 16, 8, 4, 2 }
+        });
+
+        return field;
+    }
+
     private List<List<CoreLogic.CellData>> convert(List<List<int>> field)
     {
         List<List<CoreLogic.CellData>> result = new();
