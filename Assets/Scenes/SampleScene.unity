@@ -1642,6 +1642,7 @@ MonoBehaviour:
   managers: {fileID: 760592702}
   score: 0
   scoreLabel: {fileID: 1270445336}
+  bestScoreLabel: {fileID: 908588667}
 --- !u!4 &1284137492
 Transform:
   m_ObjectHideFlags: 0

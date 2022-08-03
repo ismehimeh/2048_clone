@@ -31,6 +31,8 @@ public class GameFieldController : MonoBehaviour
 
     [SerializeField]
     private TMP_Text scoreLabel;
+    [SerializeField]
+    private TMP_Text bestScoreLabel;
 
     private void Awake()
     {
@@ -68,6 +70,10 @@ public class GameFieldController : MonoBehaviour
     void Start()
     {
         scoreLabel.text = score.ToString();
+
+        int bestScore = PlayerPrefs.GetInt("bestScore");
+        bestScoreLabel.text = bestScore.ToString();
+
         var cameraHeight = Camera.main.orthographicSize * 2;
         float cameraWidth = cameraHeight * Screen.width / Screen.height;
         gameField.transform.localScale = Vector3.one * cameraWidth * 0.9f;
@@ -126,6 +132,10 @@ public class GameFieldController : MonoBehaviour
     private void OnLoose()
     {
         PlayerPrefs.SetInt("score", score);
+        int bestScore = PlayerPrefs.GetInt("bestScore");
+        if (bestScore < score) {
+            PlayerPrefs.SetInt("bestScore", score);
+        }
         swipeDetection.OnSwipe -= OnSwipe;
         StartCoroutine(LoadGameOverSceneWithDelay());
         return;
