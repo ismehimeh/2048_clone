@@ -8,6 +8,7 @@ public class CoreLogic : ScriptableObject
 {
     public enum Direction { Left, Right, Up, Down };
 
+    [Serializable]
     public class CellData: IEquatable<CellData>
     {
         public int value;

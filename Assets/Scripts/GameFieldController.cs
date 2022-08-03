@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections;
 using TMPro;
 using UnityEngine.SceneManagement;
+using Newtonsoft.Json;
 
 public class GameFieldController : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class GameFieldController : MonoBehaviour
     public float gap = 0.15f;
 
     private CoreLogic logic;
+
     private List<List<CoreLogic.CellData>> field;
 
     private readonly List<GameObject> valuedCells = new();
@@ -85,10 +87,21 @@ public class GameFieldController : MonoBehaviour
         cellHeight = (gameFieldHeight - 5 * gap) / 4;
 
         logic = ScriptableObject.CreateInstance<CoreLogic>();
-        field = logic.getStartField();
 
+        var savedJsonString = PlayerPrefs.GetString("field");
+        var savedField = JsonConvert.DeserializeObject<List<List<CoreLogic.CellData>>>(savedJsonString);
+
+        bool isAnimatedRender = savedField == null;
+        if (savedField != null) {
+            field = savedField;
+        }
+        else
+        {
+            field = logic.getStartField();
+        }
+        
         BuuildFieldBackground();
-        RenderField();
+        RenderField(isAnimatedRender);
     }
 
     private void MakeMove(CoreLogic.Direction direction)
@@ -106,10 +119,18 @@ public class GameFieldController : MonoBehaviour
         score += logic.GetScore(field);
         scoreLabel.text = score.ToString();
 
+        SaveCurrentField();
+    
         if (!logic.isPossibleToMove(field))
         {
             OnLoose();
         }
+    }
+
+    private void SaveCurrentField()
+    {
+        var jsonString = JsonConvert.SerializeObject(field);
+        PlayerPrefs.SetString("field", jsonString);
     }
 
     private void AddNewCell()
@@ -136,6 +157,7 @@ public class GameFieldController : MonoBehaviour
         if (bestScore < score) {
             PlayerPrefs.SetInt("bestScore", score);
         }
+        PlayerPrefs.SetString("field", "");
         swipeDetection.OnSwipe -= OnSwipe;
         StartCoroutine(LoadGameOverSceneWithDelay());
         return;
@@ -175,7 +197,7 @@ public class GameFieldController : MonoBehaviour
         return PositionForCell(iReversed, j);
     }
 
-    private void RenderField()
+    private void RenderField(bool animated = true)
     {
         foreach(var cell in valuedCells)
         {
@@ -195,12 +217,15 @@ public class GameFieldController : MonoBehaviour
 
                 valuedCells.Add(cell);
 
-                if (field[i][j].isNew)
+                if (animated)
                 {
-                    cell.GetComponent<CellController>().playPopUpAnimation(cell.transform.localScale);
-                }
+                    if (field[i][j].isNew)
+                    {
+                        cell.GetComponent<CellController>().playPopUpAnimation(cell.transform.localScale);
+                    }
 
-                PerformMovementAnimation(cell, field[i][j], i, j, field);
+                    PerformMovementAnimation(cell, field[i][j], i, j, field);
+                }      
             }
         }
     }
