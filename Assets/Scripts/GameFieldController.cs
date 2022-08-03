@@ -71,6 +71,19 @@ public class GameFieldController : MonoBehaviour
 
     void Start()
     {
+        if (PlayerPrefs.GetInt("new game") == 1)
+        {
+            PlayerPrefs.SetInt("new game", 0);
+            PlayerPrefs.SetInt("score", 0);
+            int savedBestScore = PlayerPrefs.GetInt("bestScore");
+            if (savedBestScore < score)
+            {
+                PlayerPrefs.SetInt("bestScore", score);
+            }
+            PlayerPrefs.SetString("field", "");
+        }
+
+        score = PlayerPrefs.GetInt("score");
         scoreLabel.text = score.ToString();
 
         int bestScore = PlayerPrefs.GetInt("bestScore");
@@ -99,7 +112,8 @@ public class GameFieldController : MonoBehaviour
         {
             field = logic.getStartField();
         }
-        
+
+        SaveCurrentField();
         BuuildFieldBackground();
         RenderField(isAnimatedRender);
     }
@@ -120,7 +134,8 @@ public class GameFieldController : MonoBehaviour
         scoreLabel.text = score.ToString();
 
         SaveCurrentField();
-    
+        PlayerPrefs.SetInt("score", score);
+
         if (!logic.isPossibleToMove(field))
         {
             OnLoose();
@@ -246,5 +261,10 @@ public class GameFieldController : MonoBehaviour
             var newPosition = PositionForCellReversed(i, j, field);
             cell.GetComponent<CellController>().playAnimationOfMove(previousPosition, newPosition);
         }
+    }
+
+    public void tappedMenuButton()
+    {
+        SceneManager.LoadSceneAsync("Menu Scene");
     }
 }
