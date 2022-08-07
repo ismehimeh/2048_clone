@@ -6,8 +6,6 @@ using System.Linq;
 
 public class CoreLogic : ScriptableObject
 {
-    public enum Direction { Left, Right, Up, Down };
-
     [Serializable]
     public class CellData: IEquatable<CellData>
     {

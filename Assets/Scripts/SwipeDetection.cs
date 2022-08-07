@@ -3,14 +3,6 @@ using UnityEngine;
 
 public class SwipeDetection : MonoBehaviour
 {
-    public enum Direction
-    {
-        Up,
-        Right,
-        Down,
-        Left
-    }
-
     #region Events
     public delegate void Swipe(Direction direction);
     public event Swipe OnSwipe;

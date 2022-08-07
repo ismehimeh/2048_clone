@@ -59,22 +59,9 @@ public class GameFieldController : MonoBehaviour
         swipeDetection.OnSwipe -= OnSwipe;
     }
 
-    private void OnSwipe(SwipeDetection.Direction direction)
+    private void OnSwipe(Direction direction)
     {
-        switch (direction) {
-            case SwipeDetection.Direction.Up:
-                MakeMove(CoreLogic.Direction.Up);
-                break;
-            case SwipeDetection.Direction.Right:
-                MakeMove(CoreLogic.Direction.Right);
-                break;
-            case SwipeDetection.Direction.Down:
-                MakeMove(CoreLogic.Direction.Down);
-                break;
-            case SwipeDetection.Direction.Left:
-                MakeMove(CoreLogic.Direction.Left);
-                break;
-        }
+        MakeMove(direction);
     }
 
     void Start()
@@ -126,7 +113,7 @@ public class GameFieldController : MonoBehaviour
         RenderField(isAnimatedRender);
     }
 
-    private void MakeMove(CoreLogic.Direction direction)
+    private void MakeMove(Direction direction)
     {
         List<List<CoreLogic.CellData>> fieldBeforeMove = new List<List<CoreLogic.CellData>>(field);
         field = logic.makeMove(field, direction);

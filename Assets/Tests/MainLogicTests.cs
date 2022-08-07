@@ -192,7 +192,7 @@ public class MainLogicTests
         new List<int> { 4, 2, 0, 0 }
         });
 
-        List<List<CoreLogic.CellData>> result = sut.makeMove(field, CoreLogic.Direction.Left);
+        List<List<CoreLogic.CellData>> result = sut.makeMove(field, Direction.Left);
 
         Assert.AreEqual(expected, result);
     }
@@ -216,7 +216,7 @@ public class MainLogicTests
         new List<int> { 0, 0, 2, 4 }
         });
 
-        List<List<CoreLogic.CellData>> result = sut.makeMove(field, CoreLogic.Direction.Right);
+        List<List<CoreLogic.CellData>> result = sut.makeMove(field, Direction.Right);
 
         Assert.AreEqual(expected, result);
     }
@@ -240,7 +240,7 @@ public class MainLogicTests
         new List<int> { 0, 0, 0, 0 }
         });
 
-        List<List<CoreLogic.CellData>> result = sut.makeMove(field, CoreLogic.Direction.Up);
+        List<List<CoreLogic.CellData>> result = sut.makeMove(field, Direction.Up);
 
         Assert.AreEqual(expected, result);
     }
@@ -264,7 +264,7 @@ public class MainLogicTests
         new List<int> { 4, 0, 4, 0 }
         });
 
-        List<List<CoreLogic.CellData>> result = sut.makeMove(field, CoreLogic.Direction.Down);
+        List<List<CoreLogic.CellData>> result = sut.makeMove(field, Direction.Down);
 
         Assert.AreEqual(expected, result);
     }
@@ -288,7 +288,7 @@ public class MainLogicTests
         new List<int> { 4, 2, 4, 2 }
         });
 
-        List<List<CoreLogic.CellData>> result = sut.makeMove(field, CoreLogic.Direction.Left);
+        List<List<CoreLogic.CellData>> result = sut.makeMove(field, Direction.Left);
 
         Assert.AreEqual(expected, result);
     }
@@ -356,7 +356,7 @@ public class MainLogicTests
         new List<int> { 0, 0, 2, 0 }
         });
 
-        List<List<CoreLogic.CellData>> resultField = sut.makeMove(field, CoreLogic.Direction.Down);
+        List<List<CoreLogic.CellData>> resultField = sut.makeMove(field, Direction.Down);
         var result = sut.GetScore(resultField);
         Assert.AreEqual(4, result);
     }
@@ -373,7 +373,7 @@ public class MainLogicTests
         new List<int> { 0, 0, 4, 0 }
         });
 
-        List<List<CoreLogic.CellData>> resultField = sut.makeMove(field, CoreLogic.Direction.Down);
+        List<List<CoreLogic.CellData>> resultField = sut.makeMove(field, Direction.Down);
         var result = sut.GetScore(resultField);
         Assert.AreEqual(8, result);
     }
@@ -390,7 +390,7 @@ public class MainLogicTests
         new List<int> { 8, 512, 4, 0 }
         });
 
-        List<List<CoreLogic.CellData>> resultField = sut.makeMove(field, CoreLogic.Direction.Down);
+        List<List<CoreLogic.CellData>> resultField = sut.makeMove(field, Direction.Down);
         var result = sut.GetScore(resultField);
         Assert.AreEqual(1048, result);
     }
@@ -407,7 +407,7 @@ public class MainLogicTests
         new List<int> { 0, 0, 4, 0 }
         });
 
-        List<List<CoreLogic.CellData>> resultField = sut.makeMove(field, CoreLogic.Direction.Down);
+        List<List<CoreLogic.CellData>> resultField = sut.makeMove(field, Direction.Down);
         var result = sut.GetScore(resultField);
         Assert.AreEqual(0, result);
     }
