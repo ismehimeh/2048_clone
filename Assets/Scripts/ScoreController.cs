@@ -9,6 +9,6 @@ public class ScoreController : MonoBehaviour
 
     void Start()
     {
-        scoreLabel.text = PlayerPrefs.GetInt("score").ToString();
+        scoreLabel.text = PlayerPrefs.GetInt(PrefsStrings.score).ToString();
     }
 }

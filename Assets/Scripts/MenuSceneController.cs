@@ -16,7 +16,7 @@ public class MenuSceneController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        var isSoundOn = PlayerPrefs.GetInt("isSoundOn");
+        var isSoundOn = PlayerPrefs.GetInt(PrefsStrings.isSoundOn);
 
         if (isSoundOn == 1)
         {

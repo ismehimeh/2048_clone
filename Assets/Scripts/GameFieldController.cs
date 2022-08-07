@@ -8,33 +8,38 @@ using Newtonsoft.Json;
 public class GameFieldController : MonoBehaviour
 {
 
-    public GameObject gameField;
-    public GameObject cellsContainer;
-    public GameObject cellPrefab;
-    public float gap = 0.15f;
+    [SerializeField]
+    private GameObject gameField;
 
-    private CoreLogic logic;
+    [SerializeField]
+    private GameObject cellsContainer;
 
-    private List<List<CoreLogic.CellData>> field;
+    [SerializeField]
+    private GameObject cellPrefab;
 
-    private readonly List<GameObject> valuedCells = new();
-
-    float gameFieldWidth;
-    float gameFieldHeight;
-    float cellWidth;
-    float cellHeight;
-
+    [SerializeField]
+    private float gap = 0.15f;
 
     [SerializeField]
     private GameObject managers;
-    private SwipeDetection swipeDetection;
-
-    public int score = 0;
 
     [SerializeField]
     private TMP_Text scoreLabel;
+
     [SerializeField]
     private TMP_Text bestScoreLabel;
+
+    private float gameFieldWidth;
+    private float gameFieldHeight;
+    private float cellWidth;
+    private float cellHeight;
+
+    private List<List<CoreLogic.CellData>> field;
+    private readonly List<GameObject> valuedCells = new();
+    private CoreLogic logic;
+    private SwipeDetection swipeDetection;
+
+    public int score = 0;
 
     private AudioSource audioSource;
 
@@ -74,22 +79,22 @@ public class GameFieldController : MonoBehaviour
 
     void Start()
     {
-        if (PlayerPrefs.GetInt("new game") == 1)
+        if (PlayerPrefs.GetInt(PrefsStrings.isNewGame) == 1)
         {
-            PlayerPrefs.SetInt("new game", 0);
-            PlayerPrefs.SetInt("score", 0);
-            int savedBestScore = PlayerPrefs.GetInt("bestScore");
+            PlayerPrefs.SetInt(PrefsStrings.isNewGame, 0);
+            PlayerPrefs.SetInt(PrefsStrings.score, 0);
+            int savedBestScore = PlayerPrefs.GetInt(PrefsStrings.bestScore);
             if (savedBestScore < score)
             {
-                PlayerPrefs.SetInt("bestScore", score);
+                PlayerPrefs.SetInt(PrefsStrings.bestScore, score);
             }
-            PlayerPrefs.SetString("field", "");
+            PlayerPrefs.SetString(PrefsStrings.field, "");
         }
 
-        score = PlayerPrefs.GetInt("score");
+        score = PlayerPrefs.GetInt(PrefsStrings.score);
         scoreLabel.text = score.ToString();
 
-        int bestScore = PlayerPrefs.GetInt("bestScore");
+        int bestScore = PlayerPrefs.GetInt(PrefsStrings.bestScore);
         bestScoreLabel.text = bestScore.ToString();
 
         var cameraHeight = Camera.main.orthographicSize * 2;
@@ -104,7 +109,7 @@ public class GameFieldController : MonoBehaviour
 
         logic = ScriptableObject.CreateInstance<CoreLogic>();
 
-        var savedJsonString = PlayerPrefs.GetString("field");
+        var savedJsonString = PlayerPrefs.GetString(PrefsStrings.field);
         var savedField = JsonConvert.DeserializeObject<List<List<CoreLogic.CellData>>>(savedJsonString);
 
         bool isAnimatedRender = savedField == null;
@@ -137,7 +142,7 @@ public class GameFieldController : MonoBehaviour
         scoreLabel.text = score.ToString();
 
         SaveCurrentField();
-        PlayerPrefs.SetInt("score", score);
+        PlayerPrefs.SetInt(PrefsStrings.score, score);
 
         PlayMoveSoundIfNeeded();
 
@@ -149,7 +154,7 @@ public class GameFieldController : MonoBehaviour
 
     private void PlayMoveSoundIfNeeded()
     {
-        var isSoundOn = PlayerPrefs.GetInt("isSoundOn");
+        var isSoundOn = PlayerPrefs.GetInt(PrefsStrings.isSoundOn);
         if (isSoundOn == 1) {
             audioSource.Play();
         }
@@ -158,7 +163,7 @@ public class GameFieldController : MonoBehaviour
     private void SaveCurrentField()
     {
         var jsonString = JsonConvert.SerializeObject(field);
-        PlayerPrefs.SetString("field", jsonString); 
+        PlayerPrefs.SetString(PrefsStrings.field, jsonString); 
     }
 
     private void AddNewCell()
@@ -180,12 +185,12 @@ public class GameFieldController : MonoBehaviour
 
     private void OnLoose()
     {
-        PlayerPrefs.SetInt("score", score);
-        int bestScore = PlayerPrefs.GetInt("bestScore");
+        PlayerPrefs.SetInt(PrefsStrings.score, score);
+        int bestScore = PlayerPrefs.GetInt(PrefsStrings.bestScore);
         if (bestScore < score) {
-            PlayerPrefs.SetInt("bestScore", score);
+            PlayerPrefs.SetInt(PrefsStrings.bestScore, score);
         }
-        PlayerPrefs.SetString("field", "");
+        PlayerPrefs.SetString(PrefsStrings.field, "");
         swipeDetection.OnSwipe -= OnSwipe;
         StartCoroutine(LoadGameOverSceneWithDelay());
         return;

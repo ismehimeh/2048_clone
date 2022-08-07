@@ -20,22 +20,22 @@ public class MenuSceneButtonsController : MonoBehaviour
 
     public void NewGameButtonTapped()
     {
-        PlayerPrefs.SetInt("new game", 1);
+        PlayerPrefs.SetInt(PrefsStrings.isNewGame, 1);
         SceneManager.LoadSceneAsync("SampleScene");
     }
 
     public void SoundControlButtonTapped()
     {
-        var isSoundOn = PlayerPrefs.GetInt("isSoundOn");
+        var isSoundOn = PlayerPrefs.GetInt(PrefsStrings.isSoundOn);
 
         if (isSoundOn == 0)
         {
-            PlayerPrefs.SetInt("isSoundOn", 1);
+            PlayerPrefs.SetInt(PrefsStrings.isSoundOn, 1);
             soundImage.sprite = soundOnIcon;
         }
         else
         {
-            PlayerPrefs.SetInt("isSoundOn", 0);
+            PlayerPrefs.SetInt(PrefsStrings.isSoundOn, 0);
             soundImage.sprite = soundOffIcon;
         }
     }
