@@ -36,9 +36,12 @@ public class GameFieldController : MonoBehaviour
     [SerializeField]
     private TMP_Text bestScoreLabel;
 
+    private AudioSource audioSource;
+
     private void Awake()
     {
         swipeDetection = managers.GetComponent<SwipeDetection>();
+        audioSource = gameObject.GetComponent<AudioSource>();
     }
 
     private void OnEnable()
@@ -136,16 +139,26 @@ public class GameFieldController : MonoBehaviour
         SaveCurrentField();
         PlayerPrefs.SetInt("score", score);
 
+        PlayMoveSoundIfNeeded();
+
         if (!logic.isPossibleToMove(field))
         {
             OnLoose();
         }
     }
 
+    private void PlayMoveSoundIfNeeded()
+    {
+        var isSoundOn = PlayerPrefs.GetInt("isSoundOn");
+        if (isSoundOn == 1) {
+            audioSource.Play();
+        }
+    }
+
     private void SaveCurrentField()
     {
         var jsonString = JsonConvert.SerializeObject(field);
-        PlayerPrefs.SetString("field", jsonString);
+        PlayerPrefs.SetString("field", jsonString); 
     }
 
     private void AddNewCell()
