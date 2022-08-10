@@ -47,6 +47,7 @@ public class GameFieldController : MonoBehaviour
     {
         swipeDetection = managers.GetComponent<SwipeDetection>();
         audioSource = gameObject.GetComponent<AudioSource>();
+        logic = ScriptableObject.CreateInstance<CoreLogic>();
     }
 
     private void OnEnable()
@@ -66,24 +67,48 @@ public class GameFieldController : MonoBehaviour
 
     void Start()
     {
+        SetupNewGameIfNeeded();
+        SetupGUI();
+        SetupGameFieldUI();
+
+        var storedField = GetStoredFieldFromPrefs();
+        field = storedField ?? logic.getStartField();
+
+        score = PlayerPrefs.GetInt(PrefsStrings.score);
+
+        SaveCurrentFieldToPrefs();
+        BuuildFieldBackground();
+
+        bool isAnimatedRender = storedField == null;
+        RenderField(isAnimatedRender);
+    }
+
+    private void SetupNewGameIfNeeded()
+    {
         if (PlayerPrefs.GetInt(PrefsStrings.isNewGame) == 1)
         {
             PlayerPrefs.SetInt(PrefsStrings.isNewGame, 0);
-            PlayerPrefs.SetInt(PrefsStrings.score, 0);
+
+            var score = PlayerPrefs.GetInt(PrefsStrings.score);
             int savedBestScore = PlayerPrefs.GetInt(PrefsStrings.bestScore);
-            if (savedBestScore < score)
-            {
-                PlayerPrefs.SetInt(PrefsStrings.bestScore, score);
-            }
+            PlayerPrefs.SetInt(PrefsStrings.bestScore, Mathf.Max(savedBestScore, score));
+            PlayerPrefs.SetInt(PrefsStrings.score, 0);
+
             PlayerPrefs.SetString(PrefsStrings.field, "");
         }
+    }
 
-        score = PlayerPrefs.GetInt(PrefsStrings.score);
+    private void SetupGUI()
+    {
+        int score = PlayerPrefs.GetInt(PrefsStrings.score);
         scoreLabel.text = score.ToString();
 
         int bestScore = PlayerPrefs.GetInt(PrefsStrings.bestScore);
         bestScoreLabel.text = bestScore.ToString();
+    }
 
+    private void SetupGameFieldUI()
+    {
         var cameraHeight = Camera.main.orthographicSize * 2;
         float cameraWidth = cameraHeight * Screen.width / Screen.height;
         gameField.transform.localScale = Vector3.one * cameraWidth * 0.9f;
@@ -93,24 +118,6 @@ public class GameFieldController : MonoBehaviour
 
         cellWidth = (gameFieldWidth - 5 * gap) / 4;
         cellHeight = (gameFieldHeight - 5 * gap) / 4;
-
-        logic = ScriptableObject.CreateInstance<CoreLogic>();
-
-        var savedJsonString = PlayerPrefs.GetString(PrefsStrings.field);
-        var savedField = JsonConvert.DeserializeObject<List<List<CoreLogic.CellData>>>(savedJsonString);
-
-        bool isAnimatedRender = savedField == null;
-        if (savedField != null) {
-            field = savedField;
-        }
-        else
-        {
-            field = logic.getStartField();
-        }
-
-        SaveCurrentField();
-        BuuildFieldBackground();
-        RenderField(isAnimatedRender);
     }
 
     private void MakeMove(Direction direction)
@@ -128,7 +135,7 @@ public class GameFieldController : MonoBehaviour
         score += logic.GetScore(field);
         scoreLabel.text = score.ToString();
 
-        SaveCurrentField();
+        SaveCurrentFieldToPrefs();
         PlayerPrefs.SetInt(PrefsStrings.score, score);
 
         PlayMoveSoundIfNeeded();
@@ -147,10 +154,16 @@ public class GameFieldController : MonoBehaviour
         }
     }
 
-    private void SaveCurrentField()
+    private void SaveCurrentFieldToPrefs()
     {
         var jsonString = JsonConvert.SerializeObject(field);
         PlayerPrefs.SetString(PrefsStrings.field, jsonString); 
+    }
+
+    private List<List<CoreLogic.CellData>> GetStoredFieldFromPrefs()
+    {
+        var savedJsonString = PlayerPrefs.GetString(PrefsStrings.field);
+        return JsonConvert.DeserializeObject<List<List<CoreLogic.CellData>>>(savedJsonString);
     }
 
     private void AddNewCell()
@@ -172,6 +185,7 @@ public class GameFieldController : MonoBehaviour
 
     private void OnLoose()
     {
+        PlayerPrefs.SetInt(PrefsStrings.isNewGame, 1);
         PlayerPrefs.SetInt(PrefsStrings.score, score);
         int bestScore = PlayerPrefs.GetInt(PrefsStrings.bestScore);
         if (bestScore < score) {
@@ -268,7 +282,7 @@ public class GameFieldController : MonoBehaviour
         }
     }
 
-    public void tappedMenuButton()
+    public void TappedMenuButton()
     {
         SceneManager.LoadSceneAsync("Menu Scene");
     }
