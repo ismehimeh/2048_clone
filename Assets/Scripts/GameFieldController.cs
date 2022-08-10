@@ -38,7 +38,6 @@ public class GameFieldController : MonoBehaviour
     private float cellWidth;
     private float cellHeight;
 
-    private List<List<CoreLogic.CellData>> field;
     private readonly List<GameObject> valuedCells = new();
 
     public int Score
@@ -52,6 +51,21 @@ public class GameFieldController : MonoBehaviour
         {
             scoreLabel.text = value.ToString();
             PlayerPrefs.SetInt(PrefsStrings.score, value);
+        }
+    }
+
+    private List<List<CoreLogic.CellData>> field;
+    private List<List<CoreLogic.CellData>> Field
+    {
+        set
+        {
+            Score += logic.GetScore(Field);
+            SaveCurrentFieldToPrefs();
+        }
+
+        get
+        {
+            return field;
         }
     }
 
@@ -84,7 +98,7 @@ public class GameFieldController : MonoBehaviour
         SetupGameFieldUI();
 
         var storedField = GetStoredFieldFromPrefs();
-        field = storedField ?? logic.getStartField();
+        Field = storedField ?? logic.getStartField();
 
         SaveCurrentFieldToPrefs();
         BuuildFieldBackground();
@@ -130,26 +144,22 @@ public class GameFieldController : MonoBehaviour
 
     private void MakeMove(Direction direction)
     {
-        List<List<CoreLogic.CellData>> fieldBeforeMove = new List<List<CoreLogic.CellData>>(field);
-        field = logic.makeMove(field, direction);
-        if (logic.ListsEqual(field, fieldBeforeMove))
-        {
-            // if move didn't change something, then not generate new element
+        List<List<CoreLogic.CellData>> fieldBeforeMove = new(Field);
+
+        var updatedField = logic.makeMove(Field, direction);
+
+        if (logic.ListsEqual(Field, fieldBeforeMove))
             return;
-        }
 
-        AddNewCell();
+        AddNewCell(ref updatedField);
+
+        Field = updatedField;
+
         RenderField();
-        Score += logic.GetScore(field);
-
-        SaveCurrentFieldToPrefs();
-
         PlayMoveSoundIfNeeded();
 
-        if (!logic.isPossibleToMove(field))
-        {
+        if (!logic.isPossibleToMove(Field))
             OnLoose();
-        }
     }
 
     private void PlayMoveSoundIfNeeded()
@@ -162,7 +172,7 @@ public class GameFieldController : MonoBehaviour
 
     private void SaveCurrentFieldToPrefs()
     {
-        var jsonString = JsonConvert.SerializeObject(field);
+        var jsonString = JsonConvert.SerializeObject(Field);
         PlayerPrefs.SetString(PrefsStrings.field, jsonString); 
     }
 
@@ -172,7 +182,7 @@ public class GameFieldController : MonoBehaviour
         return JsonConvert.DeserializeObject<List<List<CoreLogic.CellData>>>(savedJsonString);
     }
 
-    private void AddNewCell()
+    private void AddNewCell(ref List<List<CoreLogic.CellData>> field)
     {
         (int, int)? newCellPosition = logic.getPositionForNewCell(field);
         if (!newCellPosition.HasValue)
@@ -254,21 +264,21 @@ public class GameFieldController : MonoBehaviour
             for (int j = 0; j < 4; j++)
             {
                 GameObject cell = Instantiate(cellPrefab);
-                cell.GetComponent<CellController>().SetValue(field[i][j].value);
+                cell.GetComponent<CellController>().SetValue(Field[i][j].value);
                 cell.transform.parent = cellsContainer.transform;
                 cell.transform.localScale = new Vector3(cellWidth, cellHeight, 1);
-                cell.transform.localPosition = PositionForCellReversed(i, j, field);
+                cell.transform.localPosition = PositionForCellReversed(i, j, Field);
 
                 valuedCells.Add(cell);
 
                 if (animated)
                 {
-                    if (field[i][j].isNew)
+                    if (Field[i][j].isNew)
                     {
                         cell.GetComponent<CellController>().playPopUpAnimation(cell.transform.localScale);
                     }
 
-                    PerformMovementAnimation(cell, field[i][j], i, j, field);
+                    PerformMovementAnimation(cell, Field[i][j], i, j, Field);
                 }      
             }
         }
