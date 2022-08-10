@@ -29,6 +29,10 @@ public class GameFieldController : MonoBehaviour
     [SerializeField]
     private TMP_Text bestScoreLabel;
 
+    private CoreLogic logic;
+    private SwipeDetection swipeDetection;
+    private AudioSource audioSource;
+
     private float gameFieldWidth;
     private float gameFieldHeight;
     private float cellWidth;
@@ -36,12 +40,20 @@ public class GameFieldController : MonoBehaviour
 
     private List<List<CoreLogic.CellData>> field;
     private readonly List<GameObject> valuedCells = new();
-    private CoreLogic logic;
-    private SwipeDetection swipeDetection;
 
-    public int score = 0;
+    public int Score
+    {
+        get
+        {
+            return PlayerPrefs.GetInt(PrefsStrings.score);
+        }
 
-    private AudioSource audioSource;
+        set
+        {
+            scoreLabel.text = value.ToString();
+            PlayerPrefs.SetInt(PrefsStrings.score, value);
+        }
+    }
 
     private void Awake()
     {
@@ -74,8 +86,6 @@ public class GameFieldController : MonoBehaviour
         var storedField = GetStoredFieldFromPrefs();
         field = storedField ?? logic.getStartField();
 
-        score = PlayerPrefs.GetInt(PrefsStrings.score);
-
         SaveCurrentFieldToPrefs();
         BuuildFieldBackground();
 
@@ -89,9 +99,8 @@ public class GameFieldController : MonoBehaviour
         {
             PlayerPrefs.SetInt(PrefsStrings.isNewGame, 0);
 
-            var score = PlayerPrefs.GetInt(PrefsStrings.score);
             int savedBestScore = PlayerPrefs.GetInt(PrefsStrings.bestScore);
-            PlayerPrefs.SetInt(PrefsStrings.bestScore, Mathf.Max(savedBestScore, score));
+            PlayerPrefs.SetInt(PrefsStrings.bestScore, Mathf.Max(savedBestScore, Score));
             PlayerPrefs.SetInt(PrefsStrings.score, 0);
 
             PlayerPrefs.SetString(PrefsStrings.field, "");
@@ -100,8 +109,7 @@ public class GameFieldController : MonoBehaviour
 
     private void SetupGUI()
     {
-        int score = PlayerPrefs.GetInt(PrefsStrings.score);
-        scoreLabel.text = score.ToString();
+        scoreLabel.text = Score.ToString();
 
         int bestScore = PlayerPrefs.GetInt(PrefsStrings.bestScore);
         bestScoreLabel.text = bestScore.ToString();
@@ -111,7 +119,7 @@ public class GameFieldController : MonoBehaviour
     {
         var cameraHeight = Camera.main.orthographicSize * 2;
         float cameraWidth = cameraHeight * Screen.width / Screen.height;
-        gameField.transform.localScale = Vector3.one * cameraWidth * 0.9f;
+        gameField.transform.localScale = 0.9f * cameraWidth * Vector3.one;
 
         gameFieldWidth = gameField.GetComponent<SpriteRenderer>().bounds.size.x;
         gameFieldHeight = gameField.GetComponent<SpriteRenderer>().bounds.size.y;
@@ -126,17 +134,15 @@ public class GameFieldController : MonoBehaviour
         field = logic.makeMove(field, direction);
         if (logic.ListsEqual(field, fieldBeforeMove))
         {
-            // if out move didn't change something, then not generate new element
+            // if move didn't change something, then not generate new element
             return;
         }
 
         AddNewCell();
         RenderField();
-        score += logic.GetScore(field);
-        scoreLabel.text = score.ToString();
+        Score += logic.GetScore(field);
 
         SaveCurrentFieldToPrefs();
-        PlayerPrefs.SetInt(PrefsStrings.score, score);
 
         PlayMoveSoundIfNeeded();
 
@@ -186,11 +192,12 @@ public class GameFieldController : MonoBehaviour
     private void OnLoose()
     {
         PlayerPrefs.SetInt(PrefsStrings.isNewGame, 1);
-        PlayerPrefs.SetInt(PrefsStrings.score, score);
+
         int bestScore = PlayerPrefs.GetInt(PrefsStrings.bestScore);
-        if (bestScore < score) {
-            PlayerPrefs.SetInt(PrefsStrings.bestScore, score);
+        if (bestScore < Score) {
+            PlayerPrefs.SetInt(PrefsStrings.bestScore, Score);
         }
+
         PlayerPrefs.SetString(PrefsStrings.field, "");
         swipeDetection.OnSwipe -= OnSwipe;
         StartCoroutine(LoadGameOverSceneWithDelay());
@@ -216,7 +223,10 @@ public class GameFieldController : MonoBehaviour
                 cell.transform.localPosition = PositionForCell(i, j);
             }
         }
-        cellsContainer.transform.localPosition = gameField.transform.localPosition - new Vector3(gameFieldWidth / 2, gameFieldHeight / 2, 0);
+
+        var cellsContainerPosition = gameField.transform.localPosition -
+                                        new Vector3(gameFieldWidth / 2, gameFieldHeight / 2, 0);
+        cellsContainer.transform.localPosition = cellsContainerPosition;
     }
 
     private Vector3 PositionForCell(int i, int j)
