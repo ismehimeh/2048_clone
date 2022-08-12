@@ -57,6 +57,7 @@ public class GameFieldController : MonoBehaviour
 
     private void Awake()
     {
+        Application.targetFrameRate = 60;
         swipeDetection = managers.GetComponent<SwipeDetection>();
         audioSource = gameObject.GetComponent<AudioSource>();
         logic = ScriptableObject.CreateInstance<CoreLogic>();
